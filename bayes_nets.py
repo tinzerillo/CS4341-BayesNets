@@ -24,17 +24,6 @@ def parseInput(file):
 		b2 = line.find(']')
 		
 		nodes = list(line[b1+1:b2].split(" "))
-		if len(nodes) is 0:
-			node1 = None
-			node2 = None
-		elif len(nodes) is 1:
-			node1 = nodes[0]
-			node2 = None
-		elif len(nodes) is 2:
-			node1 = nodes[0]
-			node2 = nodes[1]
-		else:
-			print("ERROR")
 		
 		line = line[b2+1:]
 		b3 = line.find('[')
@@ -42,7 +31,7 @@ def parseInput(file):
 		
 		probs = list(line[b3+1:b4].split(" "))
 		
-		G.add_node(Node(name, node1, node2, probs))
+		G.add_node(Node(name, nodes, probs))
 		
 		line = f.readline()
 		
