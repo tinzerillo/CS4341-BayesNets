@@ -34,9 +34,18 @@ def parseInput(file):
 		G.add_node(Node(name, nodes, probs))
 		
 		line = f.readline()
-		
+	
+def findNode(grph, name):
+	for node in grph.nodes():
+		if node != "" and node._name == name:
+			return node
+	return ""
 
 G=nx.Graph()
 parseInput(sys.argv[1])
 for n in G.nodes():
-	n.toString()
+	pars = n._parents
+	for p in pars:
+		x = findNode(G, p)
+		if x is not "":
+			G.add_edge(x, n)
