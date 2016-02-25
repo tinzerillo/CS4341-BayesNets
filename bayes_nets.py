@@ -40,12 +40,17 @@ def findNode(grph, name):
 		if node != "" and node._name == name:
 			return node
 	return ""
+	
+def parseQuery(grph, file):
+	pass
 
 G=nx.Graph()
 parseInput(sys.argv[1])
 for n in G.nodes():
+	n.buildProbTable()
 	pars = n._parents
 	for p in pars:
 		x = findNode(G, p)
 		if x is not "":
 			G.add_edge(x, n)
+			
