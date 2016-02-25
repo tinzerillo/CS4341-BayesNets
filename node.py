@@ -9,9 +9,7 @@ class NodeStatus(Enum):
 	DONTCARE = '-'
 
 	def instForCharacter(character):
-		print(character)
 		if character == "t":
-			print("it was t")
 			return NodeStatus.TRUE
 		elif character == "f":
 			return NodeStatus.FALSE
@@ -65,8 +63,6 @@ class Node:
 	def probabilityForTrueParents(self, parentNames):
 
 		positions = []
-
-		print("parentNames is",parentNames)
 			#for example: node1, node2, node3
 			#We need to figure out which positions those are in the parents list
 		for x in range(0,len(self._parents)):

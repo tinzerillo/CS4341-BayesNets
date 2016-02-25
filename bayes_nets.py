@@ -62,23 +62,20 @@ def parseQuery(grph, file):
 	chars = line.split(',')
 	for x in range(len(chars)):
 		node = findNodeFromIndex(G, x)
-
 		node._status = NodeStatus.instForCharacter(chars[x])
-			
+
 G = nx.Graph()
 parseInput(sys.argv[1])
 for n in G.nodes():
 	n.buildProbTable()
-	print(n)
 	pars = n._parents
 	for p in pars:
 		x = findNode(G, p)
 		if x is not "":
 			G.add_edge(x, n)
 
-print(findNode(G, "node3").name)
 findNode(G, "node5").probabilityForTrueParents(["node8", "node2"])
 parseQuery(G, "query1.txt")
 
 for n in G.nodes():
-	print(n._status)
+	print("["+n.name+"]",n._status)
