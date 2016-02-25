@@ -1,21 +1,54 @@
 # node.py
-	
+
 class Node:
 	def __init__(self, name, parents, probs):
 		self._name = name
 		self._parents = parents
 		self._probs = probs
-	
+
+
 	@property
 	def name(self):
 		return self._name
 	
 	def buildProbTable(self):
 		for i in range(2**len(self._parents)+1):
-			print("binary", end="")
+			#print("binary", end="")
 			for j in range(len(self._parents)):
-				print(self._parents[j])
+				pass
+				#print(self._parents[j])
+
+	def binrepToProbIndex(self, binrep):
+		#given 001, provide which index it is. Count up from 0 to start with
+
+		for x in range(0,len(self._probs)):
+			attempt = bin(x)
+			if attempt == binrep:
+				return x
+
+		pass
+
+	def probabilityForTrueParents(self, parentNames):
+
+		positions = []
+
+		print("parentNames is",parentNames)
+			#for example: node1, node2, node3
+			#We need to figure out which positions those are in the parents list
+		for x in range(0,len(self._parents)):
+			if self._parents[x] in parentNames:
+				positions.append(1)
+			else:
+				positions.append(0)
+
+		print("positions is:",positions)
+		binaryString = ''.join(str(x) for x in positions)[::-1]
+		print("binaryString: ",binaryString)
+		index = self.binrepToProbIndex(bin(int(binaryString, 2)))
+		print("binrepToProbIndex: ",index)
+		print("probability value:",self._probs[index])
+
 				
 		
-	def toString(self):
-		print("name:", self._name, "\nparents:", self._parents, "\nprobs", self.probs, "\n")
+	def __str__(self):
+		return "name:" + str(self._name) + "\nparents: " + str(self._parents) + "\nprobs: " + str(self._probs) + "\n"
