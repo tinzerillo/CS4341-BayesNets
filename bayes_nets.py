@@ -15,6 +15,8 @@ def parseInput(file):
 	
 	line = f.readline()
 
+	counter = 0
+
 	while line:
 		n = line.find(':');
 		name = line[0:n]
@@ -31,9 +33,10 @@ def parseInput(file):
 		
 		probs = list(line[b3+1:b4].split(" "))
 		
-		G.add_node(Node(name, nodes, probs))
+		G.add_node(Node(name, nodes, probs, counter))
 		
 		line = f.readline()
+		counter += 1
 	
 def findNode(grph, name):
 	for node in grph.nodes():
@@ -41,10 +44,28 @@ def findNode(grph, name):
 			return node
 	return ""
 	
-def parseQuery(grph, file):
-	pass
+def findNodeFromIndex(grph, index):
+	for node in grph.nodes():
+		if node != "" and node._fileIndex == index:
+			return node
+	return ""
 
-G=nx.Graph()
+def parseQuery(grph, file):
+	try:
+		f = open(file, "r")
+	except FileNotFoundError as e:
+		print("Error: could not find", file)
+		sys.exit(1)
+	
+	line = f.readline()
+
+	chars = line.split(',')
+	for x in range(len(chars)):
+		node = findNodeFromIndex(G, x)
+
+		node._status = NodeStatus.instForCharacter(chars[x])
+			
+G = nx.Graph()
 parseInput(sys.argv[1])
 for n in G.nodes():
 	n.buildProbTable()
@@ -57,4 +78,7 @@ for n in G.nodes():
 
 print(findNode(G, "node3").name)
 findNode(G, "node5").probabilityForTrueParents(["node8", "node2"])
-			
+parseQuery(G, "query1.txt")
+
+for n in G.nodes():
+	print(n._status)

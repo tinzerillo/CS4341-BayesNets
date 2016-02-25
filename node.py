@@ -1,15 +1,49 @@
 # node.py
 
+from enum import Enum
+
+class NodeStatus(Enum):
+	TRUE = 't'
+	FALSE = 'f'
+	QUERY = 'q'
+	DONTCARE = '-'
+
+	def instForCharacter(character):
+		print(character)
+		if character == "t":
+			print("it was t")
+			return NodeStatus.TRUE
+		elif character == "f":
+			return NodeStatus.FALSE
+		elif character == "?":
+			return NodeStatus.QUERY
+		elif character == "-":
+			return NodeStatus.DONTCARE
+		else:
+			return NodeStatus.DONTCARE
+
 class Node:
-	def __init__(self, name, parents, probs):
+	def __init__(self, name, parents, probs, fileIndex):
 		self._name = name
 		self._parents = parents
 		self._probs = probs
+
+		self._fileIndex = fileIndex
+		self._status = NodeStatus.DONTCARE
 
 
 	@property
 	def name(self):
 		return self._name
+
+	@property
+	def status(self):
+		return self._status
+
+	@property
+	def fileIndex(self):
+	    return self._fileIndex
+	
 	
 	def buildProbTable(self):
 		for i in range(2**len(self._parents)+1):
@@ -41,11 +75,11 @@ class Node:
 			else:
 				positions.append(0)
 
-		print("positions is:",positions)
+		#print("positions is:",positions)
 		binaryString = ''.join(str(x) for x in positions)[::-1]
-		print("binaryString: ",binaryString)
+		#print("binaryString: ",binaryString)
 		index = self.binrepToProbIndex(bin(int(binaryString, 2)))
-		print("binrepToProbIndex: ",index)
+		#print("binrepToProbIndex: ",index)
 		print("probability value:",self._probs[index])
 
 				
