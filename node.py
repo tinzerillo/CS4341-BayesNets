@@ -6,7 +6,7 @@ class NodeStatus(Enum):
 	TRUE = 't'
 	FALSE = 'f'
 	QUERY = 'q'
-	DONTCARE = '-'
+	RESOLVE = '-'
 
 	def instForCharacter(character):
 		if character == "t":
@@ -16,9 +16,9 @@ class NodeStatus(Enum):
 		elif character == "?":
 			return NodeStatus.QUERY
 		elif character == "-":
-			return NodeStatus.DONTCARE
+			return NodeStatus.RESOLVE
 		else:
-			return NodeStatus.DONTCARE
+			return NodeStatus.RESOLVE
 
 class Node:
 	def __init__(self, name, parents, probs, fileIndex):
@@ -27,7 +27,7 @@ class Node:
 		self._probs = probs
 
 		self._fileIndex = fileIndex
-		self._status = NodeStatus.DONTCARE
+		self._status = NodeStatus.RESOLVE
 
 
 	@property

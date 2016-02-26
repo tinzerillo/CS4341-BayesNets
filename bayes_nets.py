@@ -64,7 +64,7 @@ def parseQuery(grph, file):
 		node = findNodeFromIndex(G, x)
 		node._status = NodeStatus.instForCharacter(chars[x])
 
-G = nx.Graph()
+G = nx.DiGraph()
 parseInput(sys.argv[1])
 for n in G.nodes():
 	n.buildProbTable()
@@ -74,8 +74,15 @@ for n in G.nodes():
 		if x is not "":
 			G.add_edge(x, n)
 
-findNode(G, "node5").probabilityForTrueParents(["node8", "node2"])
+findNode(G, "node2").probabilityForTrueParents([])
+
+
 parseQuery(G, "query1.txt")
 
 for n in G.nodes():
 	print("["+n.name+"]",n._status)
+
+print("TOPOSORT:")
+sorted = nx.topological_sort(G)
+for node in sorted:
+	print("["+node.name+"]",node._status)
