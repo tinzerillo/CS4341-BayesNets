@@ -76,8 +76,8 @@ class Node:
 		#print("binaryString: ",binaryString)
 		index = self.binrepToProbIndex(bin(int(binaryString, 2)))
 		#print("binrepToProbIndex: ",index)
-		print("probability value:",self._probs[index])
-
+		#print("probability value:",self._probs[index])
+		return self._probs[index]
 				
 		
 	def __str__(self):
