@@ -2,6 +2,7 @@
 
 import networkx as nx
 import sys
+import random
 from node import * 
 
 def parseInput(file):
@@ -50,6 +51,31 @@ def findNodeFromIndex(grph, index):
 			return node
 	return ""
 
+# n = num samples to generate
+def generateSamples(grph, n):
+	samples = []
+	input_nodes = {}
+	
+	for node in grph.nodes():
+		if '' in node._parents:
+			input_nodes[node] = node._probs[0];
+			
+	for j in range(0, n):
+		s = []
+		for i in input_nodes:
+			x = random.random()
+			pair = ()
+			if x < float(input_nodes[i]):
+				pair = (i._name, 'T')
+			else:
+				pair = (i._name, 'F')
+			s.append(pair)
+		samples.append(s)
+		
+	print(samples)
+	
+	return samples
+	
 def parseQuery(grph, file):
 	try:
 		f = open(file, "r")
@@ -80,9 +106,13 @@ findNode(G, "node2").probabilityForTrueParents([])
 parseQuery(G, "query1.txt")
 
 for n in G.nodes():
-	print("["+n.name+"]",n._status)
+	pass
+	#print("["+n.name+"]",n._status)
 
 print("TOPOSORT:")
 sorted = nx.topological_sort(G)
 for node in sorted:
-	print("["+node.name+"]",node._status)
+	pass
+	#print("["+node.name+"]",node._status)
+	
+generateSamples(G, 4)
