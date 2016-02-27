@@ -59,8 +59,6 @@ def generateSample(grph):
 
 	for node in toposorted:
 
-		print("Operating on node",node._name)
-
 		trueParents = []
 
 		if '' not in node._parents:
@@ -69,8 +67,6 @@ def generateSample(grph):
 				node_parent_status = sample[node_parent]
 				if node_parent_status == 'T':
 					trueParents.append(node_parent)
-
-		print("trueParents is",trueParents)
 
 		value = node.probabilityForTrueParents(trueParents)
 
@@ -94,10 +90,40 @@ def parseQuery(grph, file):
 	
 	line = f.readline()
 
+	query_node = None
+
 	chars = line.split(',')
 	for x in range(len(chars)):
 		node = findNodeFromIndex(G, x)
 		node._status = NodeStatus.instForCharacter(chars[x])
+		if node._status is NodeStatus.QUERY:
+			query_node = node
+
+	return query_node
+
+def compareSampleToGraph(graph, sample):
+	for n in list(sample):
+		node = findNode(graph, n)
+		if node._status == NodeStatus.TRUE:
+			if findNode(graph, node._name)._status == NodeStatus.FALSE:
+				return False
+		elif node._status == NodeStatus.FALSE:
+			if findNode(graph, node._name)._status == NodeStatus.TRUE:
+				return False
+	return True
+
+def rejectionSample(query_node, grph, N):
+	queryTrue = 0
+	sampleNotDiscarded = 0
+
+	for x in range(0, N):
+		sample = generateSample(grph)
+		if (compareSampleToGraph(grph, sample) is True):
+			sampleNotDiscarded += 1
+			if sample[query_node._name] is 'T':
+				queryTrue += 1
+	return round(queryTrue/sampleNotDiscarded, 3)
+
 
 G = nx.DiGraph()
 parseInput(sys.argv[1])
@@ -110,13 +136,14 @@ for n in G.nodes():
 			G.add_edge(x, n)
 
 
-parseQuery(G, "query1.txt")
+query_node = parseQuery(G, "query1.txt")
 
 print("TOPOSORT:")
 sorted = nx.topological_sort(G)
 for node in sorted:
-	print("["+node.name+"]",node._status)
+	#print("["+node.name+"]",node._status)
 	pass
 	
 print("SAMPLE:")
-print(generateSample(G))
+#print(generateSample(G))
+print(rejectionSample(query_node, G, 10000))
