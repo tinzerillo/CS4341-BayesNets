@@ -3,8 +3,8 @@
 from enum import Enum
 
 class NodeStatus(Enum):
-	TRUE = 't'
-	FALSE = 'f'
+	TRUE = 'T'
+	FALSE = 'F'
 	QUERY = 'q'
 	RESOLVE = '-'
 

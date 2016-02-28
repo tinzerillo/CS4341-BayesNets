@@ -51,7 +51,6 @@ def findNodeFromIndex(grph, index):
 			return node
 	return ""
 
-# n = num samples to generate
 def generateSample(grph):
 
 	toposorted = nx.topological_sort(grph)
@@ -65,7 +64,7 @@ def generateSample(grph):
 			for node_parent in node._parents:
 				#lookup in the sample what the probability is
 				node_parent_status = sample[node_parent]
-				if node_parent_status == 'T':
+				if node_parent_status == NodeStatus.TRUE:
 					trueParents.append(node_parent)
 
 		value = node.probabilityForTrueParents(trueParents)
@@ -75,11 +74,60 @@ def generateSample(grph):
 		x = random.random()
 
 		if x < float(value):
-			sample[node._name] = 'T'
+			sample[node._name] = NodeStatus.TRUE
 		else:
-			sample[node._name] = 'F'
+			sample[node._name] = NodeStatus.FALSE
 
 	return sample
+
+def generateWeightedSample(grph):
+
+	toposorted = nx.topological_sort(grph)
+	sample = {}
+
+	weight = 1.0
+
+	for node in toposorted:
+
+		trueParents = []
+
+		if '' not in node._parents:
+			for node_parent in node._parents:
+				#lookup in the sample what the probability is
+				node_parent_status = sample[node_parent]
+				if node_parent_status ==  NodeStatus.TRUE:
+					trueParents.append(node_parent)
+
+		value = node.probabilityForTrueParents(trueParents)
+
+		#Now we have a probability value
+
+		if (node._status == NodeStatus.TRUE or node._status == NodeStatus.FALSE):
+			sample[node._name] = node._status
+			weight = weight * float(value)
+			print("weight", weight)
+		else:
+			x = random.random()
+
+			if x < float(value):
+				sample[node._name] = NodeStatus.TRUE
+			else:
+				sample[node._name] = NodeStatus.FALSE
+
+
+	return (sample, weight)
+
+def likelihoodSampling(grph, N, query_node):
+
+	samples_true = 0
+
+	for x in range(0,N):
+		sample, weight = generateWeightedSample(grph)
+
+		if sample[query_node._name] is NodeStatus.TRUE:
+			samples_true += weight
+
+	return round(samples_true/N, 3)
 	
 def parseQuery(grph, file):
 	try:
@@ -120,7 +168,7 @@ def rejectionSample(query_node, grph, N):
 		sample = generateSample(grph)
 		if (compareSampleToGraph(grph, sample) is True):
 			sampleNotDiscarded += 1
-			if sample[query_node._name] is 'T':
+			if sample[query_node._name] is NodeStatus.FALSE:
 				queryTrue += 1
 	return round(queryTrue/sampleNotDiscarded, 3)
 
@@ -146,4 +194,5 @@ for node in sorted:
 	
 print("SAMPLE:")
 #print(generateSample(G))
-print(rejectionSample(query_node, G, 10000))
+print(rejectionSample(query_node, G, 100))
+print(likelihoodSampling(G, 100, query_node))
