@@ -85,9 +85,9 @@ def generateWeightedSample(grph):
 	toposorted = nx.topological_sort(grph)
 	sample = {}
 
-	weight = 1.0
-
 	for node in toposorted:
+	
+		weight = 1.0
 
 		trueParents = []
 
@@ -102,10 +102,10 @@ def generateWeightedSample(grph):
 
 		#Now we have a probability value
 
+		#If it's evidence
 		if (node._status == NodeStatus.TRUE or node._status == NodeStatus.FALSE):
 			sample[node._name] = node._status
 			weight = weight * float(value)
-			print("weight", weight)
 		else:
 			x = random.random()
 
@@ -153,23 +153,24 @@ def compareSampleToGraph(graph, sample):
 	for n in list(sample):
 		node = findNode(graph, n)
 		if node._status == NodeStatus.TRUE:
-			if findNode(graph, node._name)._status == NodeStatus.FALSE:
+			if sample[n] == NodeStatus.FALSE:
 				return False
 		elif node._status == NodeStatus.FALSE:
-			if findNode(graph, node._name)._status == NodeStatus.TRUE:
+			if sample[n] == NodeStatus.TRUE:
 				return False
 	return True
 
-def rejectionSample(query_node, grph, N):
+def rejectionSample(grph, N, query_node):
 	queryTrue = 0
 	sampleNotDiscarded = 0
 
 	for x in range(0, N):
 		sample = generateSample(grph)
-		if (compareSampleToGraph(grph, sample) is True):
+		if compareSampleToGraph(grph, sample) is True:
 			sampleNotDiscarded += 1
-			if sample[query_node._name] is NodeStatus.FALSE:
+			if sample[query_node._name] is NodeStatus.TRUE:
 				queryTrue += 1
+				
 	return round(queryTrue/sampleNotDiscarded, 3)
 
 
@@ -184,7 +185,7 @@ for n in G.nodes():
 			G.add_edge(x, n)
 
 
-query_node = parseQuery(G, "query1.txt")
+query_node = parseQuery(G, "query2.txt")
 
 print("TOPOSORT:")
 sorted = nx.topological_sort(G)
@@ -194,5 +195,5 @@ for node in sorted:
 	
 print("SAMPLE:")
 #print(generateSample(G))
-print(rejectionSample(query_node, G, 100))
-print(likelihoodSampling(G, 100, query_node))
+print(rejectionSample(G, 99000, query_node))
+print(likelihoodSampling(G, 10000, query_node))
