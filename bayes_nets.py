@@ -25,20 +25,38 @@ def parseInput(file):
 		line = line[n:]		
 		b1 = line.find('[')
 		b2 = line.find(']')
-		
 		nodes = list(line[b1+1:b2].split(" "))
 		
 		line = line[b2+1:]
 		b3 = line.find('[')
 		b4 = line.find(']')
-		
 		probs = list(line[b3+1:b4].split(" "))
 		
 		G.add_node(Node(name, nodes, probs, counter))
 		
 		line = f.readline()
 		counter += 1
+		
+def parseQuery(grph, file):
+	try:
+		f = open(file, "r")
+	except FileNotFoundError as e:
+		print("Error: could not find", file)
+		sys.exit(1)
 	
+	line = f.readline()
+
+	query_node = None
+
+	chars = line.split(',')
+	for x in range(len(chars)):
+		node = findNodeFromIndex(G, x)
+		node._status = NodeStatus.instForCharacter(chars[x])
+		if node._status is NodeStatus.QUERY:
+			query_node = node
+
+	return query_node
+
 def findNode(grph, name):
 	for node in grph.nodes():
 		if node != "" and node._name == name:
@@ -128,26 +146,6 @@ def likelihoodSampling(grph, N, query_node):
 			samples_true += weight
 
 	return round(samples_true/N, 3)
-	
-def parseQuery(grph, file):
-	try:
-		f = open(file, "r")
-	except FileNotFoundError as e:
-		print("Error: could not find", file)
-		sys.exit(1)
-	
-	line = f.readline()
-
-	query_node = None
-
-	chars = line.split(',')
-	for x in range(len(chars)):
-		node = findNodeFromIndex(G, x)
-		node._status = NodeStatus.instForCharacter(chars[x])
-		if node._status is NodeStatus.QUERY:
-			query_node = node
-
-	return query_node
 
 def compareSampleToGraph(graph, sample):
 	for n in list(sample):
@@ -173,7 +171,6 @@ def rejectionSample(grph, N, query_node):
 				
 	return round(queryTrue/sampleNotDiscarded, 3)
 
-
 G = nx.DiGraph()
 parseInput(sys.argv[1])
 for n in G.nodes():
@@ -184,16 +181,7 @@ for n in G.nodes():
 		if x is not "":
 			G.add_edge(x, n)
 
+query_node = parseQuery(G, "query_preston.txt")
 
-query_node = parseQuery(G, "query2.txt")
-
-print("TOPOSORT:")
-sorted = nx.topological_sort(G)
-for node in sorted:
-	#print("["+node.name+"]",node._status)
-	pass
-	
-print("SAMPLE:")
-#print(generateSample(G))
-print(rejectionSample(G, 99000, query_node))
-print(likelihoodSampling(G, 10000, query_node))
+print(rejectionSample(G, 1000, query_node))
+print(likelihoodSampling(G, 1000, query_node))
