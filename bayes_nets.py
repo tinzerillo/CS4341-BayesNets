@@ -121,9 +121,12 @@ def generateWeightedSample(grph):
 		#Now we have a probability value
 
 		#If it's evidence
-		if (node._status == NodeStatus.TRUE or node._status == NodeStatus.FALSE):
+		if node._status == NodeStatus.TRUE:# or node._status == NodeStatus.FALSE:
 			sample[node._name] = node._status
 			weight = weight * float(value)
+		elif node._status == NodeStatus.FALSE:
+			sample[node._name] = node._status
+			weight = weight * float(1-float(value))
 		else:
 			x = random.random()
 
@@ -138,14 +141,16 @@ def generateWeightedSample(grph):
 def likelihoodSampling(grph, N, query_node):
 
 	samples_true = 0
+	total_weight = 0
 
 	for x in range(0,N):
 		sample, weight = generateWeightedSample(grph)
 
 		if sample[query_node._name] is NodeStatus.TRUE:
 			samples_true += weight
+		total_weight+=weight
 
-	return round(samples_true/N, 3)
+	return round(samples_true/total_weight, 3)
 
 def compareSampleToGraph(graph, sample):
 	for n in list(sample):
@@ -181,7 +186,7 @@ for n in G.nodes():
 		if x is not "":
 			G.add_edge(x, n)
 
-query_node = parseQuery(G, "query_preston.txt")
+query_node = parseQuery(G, sys.argv[2])
 
-print(rejectionSample(G, 1000, query_node))
-print(likelihoodSampling(G, 1000, query_node))
+print(rejectionSample(G, 25000, query_node))
+print(likelihoodSampling(G, 25000, query_node))
